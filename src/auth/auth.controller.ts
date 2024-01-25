@@ -1,4 +1,4 @@
-import { Controller, Request, Post, UseGuards, Body, Get } from '@nestjs/common';
+import { Controller, Request, Post, UseGuards, Body, Get, Param, Res } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { UserDto } from '../users/dto/user.dto';
@@ -22,5 +22,12 @@ export class AuthController {
   @Get('check-auth')
   async checkAuth(@Request() req) {
     return { message: 'User is authenticated', user: req.user };
+  }
+
+  @Get('verify/:token')
+  async verify(@Param('token') token: string, @Res() res) {
+    const result = await this.authService.verifyEmail(token);
+    
+    res.status(result.statusCode).json({ message: result.message });
   }
 }
