@@ -3,6 +3,7 @@ import { UserService } from '../users/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { UserDto } from '../users/dto/user.dto';
 import { MailerService } from '../shared/mailer/mailer.service';
+import { LoggerService } from '../shared/logger/logger.service';
 import * as jwt from 'jsonwebtoken';
 import { TokenExpiredError } from 'jsonwebtoken';
 
@@ -14,6 +15,7 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
     private readonly mailerService: MailerService,
+    private readonly loggerService: LoggerService,
   ) {}
 
   async validateUser(username: string, password: string): Promise<any> {
@@ -28,26 +30,31 @@ export class AuthService {
   }
 
   async register(userDto: UserDto): Promise<any> {
-    const existingUser = await this.userService.findByUsername(userDto.username);
+    try {
+      const existingUser = await this.userService.findByUsername(userDto.username);
 
-    if (existingUser) {
-      return { message: 'Username is already taken' };
+      if (existingUser) {
+        return { message: 'Username is already taken' };
+      }
+
+      const existingEmailUser = await this.userService.findByEmail(userDto.email);
+
+      if (existingEmailUser) {
+        return { message: 'Email is already in use' };
+      }
+
+      const newUser = await this.userService.createUser(userDto);
+
+      const verificationToken = this.generateVerificationToken(newUser.username);
+
+      await this.mailerService.sendVerificationEmail(newUser.username, newUser.email, verificationToken);
+
+      const { password, ...result } = newUser;
+      return result;
+    } catch (error) {
+      this.loggerService.error(`Error during user registration: ${error.message}`);
+      throw error;
     }
-
-    const existingEmailUser = await this.userService.findByEmail(userDto.email);
-
-    if (existingEmailUser) {
-      return { message: 'Email is already in use' };
-    }
-
-    const newUser = await this.userService.createUser(userDto);
-
-    const verificationToken = this.generateVerificationToken(newUser.username);
-
-    await this.mailerService.sendVerificationEmail(newUser.username, newUser.email, verificationToken);
-
-    const { password, ...result } = newUser;
-    return result;
   }
 
   private generateVerificationToken(username: string): string {
@@ -73,10 +80,10 @@ export class AuthService {
       return { statusCode: 200, message: 'Account activated successfully' };
     } catch (error) {
       if (error instanceof TokenExpiredError) {
-        console.error('Token has expired:', error);
+        this.loggerService.error(`Token has expired: ${error}`);
         return { statusCode: 401, message: 'Token has expired' };
       } else {
-        console.error('Token verification failed:', error);
+        this.loggerService.error(`Token verification failed: ${error}`);
         return { statusCode: 400, message: 'Invalid verification token' };
       }
     }

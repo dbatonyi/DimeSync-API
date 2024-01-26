@@ -3,12 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, FindOneOptions } from 'typeorm';
 import { User } from './user.entity';
 import { UserDto } from './dto/user.dto';
+import { LoggerService } from '../shared/logger/logger.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly loggerService: LoggerService,
   ) {}
 
   async createUser(userDto: UserDto): Promise<User> {
@@ -30,7 +32,7 @@ export class UserService {
     try {
       return await this.userRepository.save(user);
     } catch (error) {
-      console.error('Error updating user:', error);
+      this.loggerService.error(`Error updating user: ${error}`);
       throw new NotFoundException('User not found');
     }
   }

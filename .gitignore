@@ -1,2 +1,5 @@
 node_modules
 .env
+info.log
+warning.log
+error.log
