@@ -1,21 +1,21 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from '../users/user.entity';
-import { FinancialTable } from './financialTable.entity';
+import { UserEntity } from '../users/user.entity';
+import { FinancialTableEntity } from './financialTable.entity';
 import { LoggerService } from '../shared/logger/logger.service';
 
 @Injectable()
 export class FinancialTableService {
   constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
-    @InjectRepository(FinancialTable)
-    private readonly financialRepository: Repository<FinancialTable>,
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(FinancialTableEntity)
+    private readonly financialRepository: Repository<FinancialTableEntity>,
     private readonly loggerService: LoggerService,
   ) {}
 
-  async createFinancialTableEntry(userId: number, amount: number): Promise<FinancialTable> {
+  async createFinancialTableEntry(userId: number, amount: number): Promise<FinancialTableEntity> {
     try {
       const user = await this.userRepository.findOne({ where: { id: userId } });
 
@@ -23,8 +23,7 @@ export class FinancialTableService {
         throw new NotFoundException('User not found');
       }
 
-      const financialEntry = new FinancialTable();
-      financialEntry.amount = amount;
+      const financialEntry = new FinancialTableEntity();
       financialEntry.user = user;
 
       return await this.financialRepository.save(financialEntry);
