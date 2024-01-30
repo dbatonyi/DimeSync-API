@@ -15,7 +15,7 @@ export class FinancialTableEntity {
   weight: number;
 
   @Column()
-  status: string;
+  status: number;
 
   @Column()
   currency: string;
