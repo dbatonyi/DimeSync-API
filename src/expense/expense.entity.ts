@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { ExpenseGroupEntity } from '../expenseGroup/expenseGroup.entity';
 
 @Entity('expenses')
@@ -14,6 +14,9 @@ export class ExpenseEntity {
 
   @Column()
   expense_category: string;
+
+  @CreateDateColumn({ type: 'timestamp' })
+  created_at: Date;
 
   // Many Expenses can be associated with one ExpenseGroup
   @ManyToOne(() => ExpenseGroupEntity, expenseGroup => expenseGroup.expenses)

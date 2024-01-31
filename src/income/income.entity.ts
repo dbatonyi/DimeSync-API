@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { IncomeGroupEntity } from '../incomeGroup/incomeGroup.entity';
 
 @Entity('incomes')
@@ -14,6 +14,9 @@ export class IncomeEntity {
 
   @Column()
   income_category: string;
+
+  @CreateDateColumn({ type: 'timestamp' })
+  created_at: Date;
 
   // Many Incomes can be associated with one IncomeGroup
   @ManyToOne(() => IncomeGroupEntity, incomeGroup => incomeGroup.incomes)

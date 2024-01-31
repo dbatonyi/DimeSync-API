@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany } from 'typeorm';
 import { FinancialTableEntity } from '../financialTable/financialTable.entity';
 
 enum UserRole {
@@ -36,6 +36,9 @@ export class UserEntity {
     default: UserRole.User,
   })
   role: UserRole;
+
+  @CreateDateColumn({ type: 'timestamp' })
+  created_at: Date;
 
   // One User can have many FinancialTables
   @OneToMany(() => FinancialTableEntity, financialTable => financialTable.user)

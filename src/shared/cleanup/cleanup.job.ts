@@ -14,6 +14,7 @@ export class CleanupJob {
   handleCleanup(): void {
     this.loggerService.info(`Running cleanup job...`);
     this.cleanupService.cleanupFinancialTables();
+    this.cleanupService.cleanupInactiveUsers();
     this.loggerService.info(`Cleanup job done!`);
   }
 }
