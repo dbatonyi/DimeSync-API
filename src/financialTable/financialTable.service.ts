@@ -4,6 +4,8 @@ import { Repository } from 'typeorm';
 import { UserEntity } from '../users/user.entity';
 import { FinancialTableEntity } from './financialTable.entity';
 import { LoggerService } from '../shared/logger/logger.service';
+import { CreateFinancialTableDto } from './dto/createFinancialTable.dto';
+import { UpdateFinancialTableDto } from './dto/updateFinancialTable.dto';
 
 @Injectable()
 export class FinancialTableService {
@@ -15,15 +17,17 @@ export class FinancialTableService {
     private readonly loggerService: LoggerService,
   ) {}
 
-  async createFinancialTableEntry(userId: number, amount: number): Promise<FinancialTableEntity> {
+  async createFinancialTable(createFinancialTableDto: CreateFinancialTableDto): Promise<FinancialTableEntity> {
     try {
-      const user = await this.userRepository.findOne({ where: { id: userId } });
+      const { user_id, ...restDto } = createFinancialTableDto;
+
+      const user = await this.userRepository.findOne({ where: { id: user_id } });
 
       if (!user) {
         throw new NotFoundException('User not found');
       }
 
-      const financialEntry = new FinancialTableEntity();
+      const financialEntry = this.financialRepository.create(restDto);
       financialEntry.user = user;
 
       return await this.financialRepository.save(financialEntry);
@@ -33,10 +37,43 @@ export class FinancialTableService {
     }
   }
 
+  async updateFinancialTableEntry(entryId: number, updateFinancialTableDto: UpdateFinancialTableDto): Promise<void> {
+    try {
+      const financialEntry = await this.financialRepository.findOne({ where: { id: entryId } });
+
+      if (!financialEntry) {
+        throw new NotFoundException('Financial entry not found');
+      }
+
+      if (updateFinancialTableDto.financial_table_name) {
+        financialEntry.financial_table_name = updateFinancialTableDto.financial_table_name;
+      }
+      if (updateFinancialTableDto.weight !== undefined) {
+        financialEntry.weight = updateFinancialTableDto.weight;
+      }
+      if (updateFinancialTableDto.currency) {
+        financialEntry.currency = updateFinancialTableDto.currency;
+      }
+
+      await this.financialRepository.save(financialEntry);
+    } catch (error) {
+      this.loggerService.error(`Error during financial entry update: ${error.message}`);
+      throw error;
+    }
+  }
+
   async deleteFinancialTableEntry(entryId: number): Promise<number> {
     try {
-      const result = await this.financialRepository.delete(entryId);
-      return result.affected;
+      const financialEntry = await this.financialRepository.findOne({ where: { id: entryId } });
+
+      if (!financialEntry) {
+        throw new NotFoundException('Financial entry not found');
+      }
+
+      financialEntry.status = 0;
+      await this.financialRepository.save(financialEntry);
+
+      return;
     } catch (error) {
       this.loggerService.error(`Error during financial entry deletion: ${error.message}`);
       throw error;
