@@ -11,7 +11,6 @@ DimeSync API is a financial application (savings app) developed using Nest.js. I
 5. [Authentication](#authentication)
 6. [Endpoints](#endpoints)
 7. [Logging](#logging)
-8. [Contributing](#contributing)
 9. [License](#license)
 
 ## Features
@@ -133,7 +132,7 @@ Access the API using Swagger documentation at `http://localhost:3000/api`.
 
 ### Financial Table
 
-- - **Create Financial Entry**:
+- **Create Financial Entry**:
   - **Endpoint**: `/financial-table/create`
   - **Method**: `POST`
   - **Headers**:
@@ -157,7 +156,7 @@ Access the API using Swagger documentation at `http://localhost:3000/api`.
     - `status` (Required, default: 1): Status for the new financial entry (must be a number).
   - **Response**: Returns the created financial entry.
 
-- - **Update Financial Entry**:
+- **Update Financial Entry**:
   - **Endpoint**: `/financial-table/update/:entryId`
   - **Method**: `PUT`
   - **Headers**:
