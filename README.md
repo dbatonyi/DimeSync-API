@@ -86,10 +86,11 @@ Access the API using Swagger documentation at `http://localhost:3000/api`.
 
 ### Authentication
 
-- **User Registration**: 
+- **User Registration**:
+
   - **Endpoint**: `/auth/register`
   - **Method**: `POST`
-  - **Request Body**: 
+  - **Request Body**:
     ```json
     {
       "email": "user@example.com",
@@ -98,10 +99,11 @@ Access the API using Swagger documentation at `http://localhost:3000/api`.
     ```
   - **Response**: Returns the registered user details.
 
-- **User Login**: 
+- **User Login**:
+
   - **Endpoint**: `/auth/login`
   - **Method**: `POST`
-  - **Request Body**: 
+  - **Request Body**:
     ```json
     {
       "email": "user@example.com",
@@ -110,19 +112,20 @@ Access the API using Swagger documentation at `http://localhost:3000/api`.
     ```
   - **Response**: Returns a JWT token for authentication.
 
-- **Check Authentication**: 
+- **Check Authentication**:
+
   - **Endpoint**: `/auth/check-auth`
   - **Method**: `GET`
-  - **Headers**: 
+  - **Headers**:
     ```
     Authorization: Bearer <JWT Token>
     ```
   - **Response**: Returns a message indicating whether the user is authenticated and user details.
 
-- **Verify Email**: 
+- **Verify Email**:
   - **Endpoint**: `/auth/verify/:token`
   - **Method**: `GET`
-  - **Params**: 
+  - **Params**:
     ```
     token: <verification_token>
     ```
@@ -130,14 +133,15 @@ Access the API using Swagger documentation at `http://localhost:3000/api`.
 
 ### Financial Table
 
-- **Create Financial Entry**: 
+- **Create Financial Entry**:
+
   - **Endpoint**: `/financial-table/create`
   - **Method**: `POST`
-  - **Headers**: 
+  - **Headers**:
     ```
     Authorization: Bearer <JWT Token>
     ```
-  - **Request Body**: 
+  - **Request Body**:
     ```json
     {
       "your": "financial_entry_data"
@@ -145,38 +149,42 @@ Access the API using Swagger documentation at `http://localhost:3000/api`.
     ```
   - **Response**: Returns the created financial entry.
 
-- **Update Financial Entry**: 
+- - **Update Financial Entry**:
   - **Endpoint**: `/financial-table/update/:entryId`
   - **Method**: `PUT`
-  - **Headers**: 
+  - **Headers**:
     ```
     Authorization: Bearer <JWT Token>
     ```
-  - **Params**: 
+  - **Params**:
     ```
     entryId: <financial_entry_id>
     ```
-  - **Request Body**: 
+  - **Request Body**:
     ```json
     {
-      "your": "updated_data"
+      "financial_table_name": "Updated Name",
+      "weight": 5,
+      "currency": "USD"
     }
     ```
+    - `financial_table_name` (Optional): Updated name for the financial entry.
+    - `weight` (Optional): Updated weight for the financial entry (must be a number).
+    - `currency` (Optional): Updated currency for the financial entry.
   - **Response**: Returns a message indicating the success or failure of the update.
 
-- **Delete Financial Entry**: 
+- **Delete Financial Entry**:
   - **Endpoint**: `/financial-table/delete/:entryId`
   - **Method**: `DELETE`
-  - **Headers**: 
+  - **Headers**:
     ```
     Authorization: Bearer <JWT Token>
     ```
-  - **Params**: 
+  - **Params**:
     ```
     entryId: <financial_entry_id>
     ```
   - **Response**: Returns a message indicating the success or failure of the deletion.
-
 
 ## Logging
 
