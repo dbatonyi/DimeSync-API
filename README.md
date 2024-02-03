@@ -133,8 +133,7 @@ Access the API using Swagger documentation at `http://localhost:3000/api`.
 
 ### Financial Table
 
-- **Create Financial Entry**:
-
+- - **Create Financial Entry**:
   - **Endpoint**: `/financial-table/create`
   - **Method**: `POST`
   - **Headers**:
@@ -144,9 +143,18 @@ Access the API using Swagger documentation at `http://localhost:3000/api`.
   - **Request Body**:
     ```json
     {
-      "your": "financial_entry_data"
+      "user_id": 1,
+      "financial_table_name": "New Financial Entry",
+      "weight": 1,
+      "currency": "USD",
+      "status": 1
     }
     ```
+    - `user_id` (Required): User ID for whom the financial entry is created.
+    - `financial_table_name` (Required): Name for the new financial entry.
+    - `weight` (Required, default: 1): Weight for the new financial entry (must be a number).
+    - `currency` (Required): Currency for the new financial entry.
+    - `status` (Required, default: 1): Status for the new financial entry (must be a number).
   - **Response**: Returns the created financial entry.
 
 - - **Update Financial Entry**:
