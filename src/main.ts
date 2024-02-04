@@ -5,11 +5,19 @@ import { SchedulerRegistry } from '@nestjs/schedule';
 import { CleanupJob } from './shared/cleanup/cleanup.job';
 import { CleanupService } from './shared/cleanup/cleanup.service';
 import { LoggerService } from './shared/logger/logger.service';
+import { UserService } from './users/user.service';
 
 async function startApp() {
   dotenv.config();
 
   const app = await NestFactory.create(AppModule);
+
+  const userService = app.get(UserService);
+  const adminUserExists = await userService.doesAdminUserExist();
+
+  if (!adminUserExists) {
+    await userService.createAdminUserFromEnv();
+  }
 
   const scheduler = app.get(SchedulerRegistry);
   const cleanupJobInstance = new CleanupJob(

@@ -1,7 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany } from 'typeorm';
 import { FinancialTableEntity } from '../financialTable/financialTable.entity';
 
-enum UserRole {
+export enum UserRole {
   Admin = 'admin',
   Premium = 'premium',
   User = 'user',

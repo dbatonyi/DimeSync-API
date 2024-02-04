@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UserDto } from '../users/dto/user.dto';
 import { MailerService } from '../shared/mailer/mailer.service';
 import { LoggerService } from '../shared/logger/logger.service';
+import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import { TokenExpiredError } from 'jsonwebtoken';
 
@@ -21,7 +22,7 @@ export class AuthService {
   async validateUser(username: string, password: string): Promise<any> {
     const user = await this.userService.findByUsername(username);
 
-    if (user && user.password === password) {
+    if (user && (await bcrypt.compare(password, user.password))) {
       const { password, ...result } = user;
       return result;
     }
@@ -43,7 +44,10 @@ export class AuthService {
         return { message: 'Email is already in use' };
       }
 
-      const newUser = await this.userService.createUser(userDto);
+      const newUser = await this.userService.createUser({
+        ...userDto,
+        password: await bcrypt.hash(userDto.password, 10),
+      });
 
       const verificationToken = this.generateVerificationToken(newUser.username);
 

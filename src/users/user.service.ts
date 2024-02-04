@@ -1,9 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, FindOneOptions } from 'typeorm';
-import { UserEntity } from './user.entity';
+import { UserEntity, UserRole } from './user.entity';
 import { UserDto } from './dto/user.dto';
 import { LoggerService } from '../shared/logger/logger.service';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -12,6 +13,28 @@ export class UserService {
     private readonly userRepository: Repository<UserEntity>,
     private readonly loggerService: LoggerService,
   ) {}
+
+  async doesAdminUserExist(): Promise<boolean> {
+    const adminUser = await this.userRepository.findOne({ where: { role: UserRole.Admin } });
+    return !!adminUser;
+  }
+
+  async createAdminUserFromEnv(): Promise<void> {
+    const adminUser = new UserEntity();
+    adminUser.username = process.env.ADMIN_USERNAME || 'admin';
+    adminUser.first_name = process.env.ADMIN_FIRST_NAME || 'Admin';
+    adminUser.last_name = process.env.ADMIN_LAST_NAME || 'User';
+    adminUser.email = process.env.ADMIN_EMAIL || 'admin@example.com';
+    adminUser.status = 1;
+
+    adminUser.role = UserRole.Admin;
+
+    const plainPassword = process.env.ADMIN_PASSWORD || 'admin';
+    const hashedPassword = await bcrypt.hash(plainPassword, 10);
+    adminUser.password = hashedPassword;
+
+    await this.userRepository.save(adminUser);
+  }
 
   async createUser(userDto: UserDto): Promise<UserEntity> {
     const user = this.userRepository.create({...userDto, status: 0});
