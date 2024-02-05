@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { UserService } from '../users/user.service';
 import { JwtService } from '@nestjs/jwt';
-import { UserDto } from '../users/dto/user.dto';
+import { CreateUserDto } from '../users/dto/createUser.dto';
 import { MailerService } from '../shared/mailer/mailer.service';
 import { LoggerService } from '../shared/logger/logger.service';
 import * as bcrypt from 'bcrypt';
@@ -30,23 +30,23 @@ export class AuthService {
     return null;
   }
 
-  async register(userDto: UserDto): Promise<any> {
+  async register(CreateUserDto: CreateUserDto): Promise<any> {
     try {
-      const existingUser = await this.userService.findByUsername(userDto.username);
+      const existingUser = await this.userService.findByUsername(CreateUserDto.username);
 
       if (existingUser) {
         return { message: 'Username is already taken' };
       }
 
-      const existingEmailUser = await this.userService.findByEmail(userDto.email);
+      const existingEmailUser = await this.userService.findByEmail(CreateUserDto.email);
 
       if (existingEmailUser) {
         return { message: 'Email is already in use' };
       }
 
       const newUser = await this.userService.createUser({
-        ...userDto,
-        password: await bcrypt.hash(userDto.password, 10),
+        ...CreateUserDto,
+        password: await bcrypt.hash(CreateUserDto.password, 10),
       });
 
       const verificationToken = this.generateVerificationToken(newUser.username);

@@ -98,6 +98,48 @@ Access the API using Swagger documentation at `http://localhost:3000/api`.
     ```
   - **Response**: Returns the registered user details.
 
+- **Update Profile**:
+
+  - **Endpoint**: `/users/update-profile`
+  - **Method**: `PUT`
+  - **Headers**:
+    ```
+    Authorization: Bearer <JWT Token>
+    ```
+  - **Request Body**:
+    ```json
+    {
+      "first_name": "Updated First Name",
+      "last_name": "Updated Last Name",
+      "email": "updated.email@example.com",
+      "password": "newpassword"
+    }
+    ```
+  - **Response**:
+    - **Success Response**:
+      ```json
+      {
+        "message": "Profile updated successfully",
+        "user": {
+          "id": 123,
+          "username": "updated_username",
+          "first_name": "Updated First Name",
+          "last_name": "Updated Last Name",
+          "email": "updated.email@example.com",
+          "status": 1,
+          "role": "user",
+          "created_at": "2024-02-05T12:34:56.789Z"
+        }
+      }
+      ```
+    - **Error Response**:
+      ```json
+      {
+        "message": "Failed to update profile",
+        "error": "Error details..."
+      }
+      ```
+
 - **User Login**:
 
   - **Endpoint**: `/auth/login`
